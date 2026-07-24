@@ -17,12 +17,17 @@ function _draw()
     cls()
 
     -- draw current map
-    draw_cell(5, 9)
+    draw_cells({1, 3, 17, 24}, 8)
     map()
 
     -- draw sprites
     spr(1, pos_x, pos_y)
-    
+end
+
+function draw_cells(cell_array, colour)
+    for cell in all(cell_array) do
+        draw_cell(cell, colour)
+    end
 end
 
 function draw_cell(cell_num, colour)
