@@ -15,12 +15,27 @@ end
 
 function _draw()
     cls()
-    
-    rectfill(0, 0, 23, 23, 3)
-    
+
+    -- draw current map
+    draw_cell(5, 9)
     map()
 
+    -- draw sprites
     spr(1, pos_x, pos_y)
+    
+end
+
+function draw_cell(cell_num, colour)
+    -- cell_num starts at 0
+    x_coord = cell_num % 5
+    y_coord = cell_num \ 5
+
+    x_start = x_coord * 24 + 1
+    x_end = x_start + 22
+    y_start = y_coord * 24 + 1
+    y_end = y_start + 22
+
+    rectfill(x_start, y_start, x_end, y_end, colour)
 end
 
 __gfx__
