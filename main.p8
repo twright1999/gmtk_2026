@@ -1,28 +1,54 @@
 pico-8 cartridge // http://www.pico-8.com
 version 43
 __lua__
+
+tile_t = {0, 1, 2, 3, 4, 7, 12, 17, 22}
+tile_o = {1, 2, 3, 6, 8, 11, 13, 16, 18, 21, 22, 23}
+tile_e = {1, 2, 3, 6, 11, 12, 16, 21, 22, 23}
+tile_s = {1, 2, 3, 6, 11, 12, 13, 18, 21, 22, 23}
+tile_m = {0, 1, 3, 4, 5, 7, 9, 10, 12, 14, 15, 17, 19, 20, 24}
+tile_list = {tile_t, tile_o, tile_e, tile_s}
+current_tile = 1
+
+time_limit = 20
+
 function _init()
     pos_x = 64
     pos_y = 64
+    timer_val = time_limit
 end
--- ⬆️⬇️➡️
+
 function _update()
     if btn(➡️) then pos_x += 3 end
     if btn(⬅️) then pos_x -= 3 end
     if btn(⬇️) then pos_y += 3 end
     if btn(⬆️) then pos_y -= 3 end
+
+    timer_val -= 1
+    if timer_val == 0 then
+        timer_val = time_limit
+        current_tile += 1
+        if current_tile == # tile_list + 1 then current_tile = 1 end
+    end
+
 end
 
 function _draw()
     cls()
 
     -- draw current map
-    draw_cell(5, 9)
+    draw_cells(tile_list[current_tile], 8)
     map()
+    print(# tile_list, 50, 50)
 
     -- draw sprites
     spr(1, pos_x, pos_y)
-    
+end
+
+function draw_cells(cell_array, colour)
+    for cell in all(cell_array) do
+        draw_cell(cell, colour)
+    end
 end
 
 function draw_cell(cell_num, colour)
