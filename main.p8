@@ -26,11 +26,24 @@ function _init()
     timer_val = flash_time
 end
 
+screen_size = 128
+bart_size = 8
+marge_size = 7
+scale_factor_0 = 0
+
 function _update()
-    if btn(➡️) then pos_x += 3 end
-    if btn(⬅️) then pos_x -= 3 end
-    if btn(⬇️) then pos_y += 3 end
-    if btn(⬆️) then pos_y -= 3 end
+    if btn(➡️) then
+        pos_x = min(pos_x + 3, screen_size - bart_size - marge_size)
+    end
+    if btn(⬅️) then
+        pos_x = max(pos_x - 3, scale_factor_0)
+    end
+    if btn(⬇️) then
+        pos_y = min(pos_y + 3, screen_size - bart_size - marge_size)
+    end
+    if btn(⬆️) then
+        pos_y = max(pos_y - 3, scale_factor_0)
+    end
 
     next_state = state
 
