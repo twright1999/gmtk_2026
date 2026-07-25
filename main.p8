@@ -1,9 +1,26 @@
 pico-8 cartridge // http://www.pico-8.com
 version 43
 __lua__
-
+-- THIS LINE OF CODE IS RESPONSIBLE FOR PLAYING THE MUSIC IN THE GAME
+-- Music is the arrangement of sound to create some combination of
+-- form, harmony, melody, rhythm, or otherwise expressive
+-- content.[1][2][3] Music is generally agreed to be a cultural
+-- universal that is present in all human societies.[4] Definitions
+-- of music vary widely in substance and approach.[5] While scholars
+-- agree that music is defined by a small number of specific elements,
+-- there is no consensus as to what these necessary elements are.[6]
+-- Music is often characterized as a highly versatile medium for
+-- expressing human creativity.[7] Diverse activities are involved in
+-- the creation of music, and are often divided into categories of
+-- composition, improvisation, and performance.[8] Music may be
+-- performed using a wide variety of musical instruments, including
+-- the human voice. It can also be composed, sequenced, or otherwise
+-- produced to be indirectly played mechanically or electronically,
+-- such as via a music box, barrel organ, or digital audio workstation
+-- software on a computer.
 music(0)
 
+-- TILE STUFF
 tile_t = {0, 1, 2, 3, 4, 7, 12, 17, 22}
 tile_o = {1, 2, 3, 6, 8, 11, 13, 16, 18, 21, 22, 23}
 tile_e = {1, 2, 3, 6, 11, 12, 16, 21, 22, 23}
@@ -30,27 +47,28 @@ flash_time = 10
 -- Should be 90 frames but 1 
 safe_time = 90
 
-show_warning = false
-warning_count = 0
-
+-- SCREEN STUFF
 screen_size = 128
 bart_size = 8
 marge_size = 7
 
+-- PLAYER STUFF
 bart_movement_speed = 3
-
 bart_health = 140
-
 active_player_sprite = 1
 
+-- STATE STUFF
 state = "flashing"
+show_warning = false
+warning_count = 0
 
+-- PARTICLE STUFF
 death_particle_life = 0
 death_particles = {}
 
+-- HOMER STUFF
 spawn_homer_every_number_of_these_tiles = 2
 homer_eating_damage = 5
-
 evil_homer = {}
 
 function make_homer(x, y)
