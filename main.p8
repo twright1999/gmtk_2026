@@ -77,7 +77,7 @@ function _update()
         show_safe = true
 
         -- Transition to flashing
-        if timer_val <= 0 then
+        if timer_val <= 0 and current_tile < # tile_list then
             next_state = "flashing"
             timer_val = flash_time
             current_tile += 1
