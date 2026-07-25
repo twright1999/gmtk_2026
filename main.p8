@@ -35,7 +35,7 @@ function _update()
     next_state = state
 
     if state == "flashing" then
-        timer_val -= 1
+        timer_val -= 1 
 
         if timer_val <= 0 then
             timer_val = flash_time
