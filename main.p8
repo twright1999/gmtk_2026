@@ -10,17 +10,20 @@ tile_m = {0, 1, 3, 4, 5, 7, 9, 10, 12, 14, 15, 17, 19, 20, 24}
 tile_list = {tile_t, tile_o, tile_e, tile_s}
 current_tile = 1
 
--- 15 frames = 0.5 seconds
-time_limit = 10
+-- 10 frames = 0.33 seconds
+flash_time = 10
+
+safe_time = 60
 
 show_warning = false
 warning_count = 0
 
+state = "flashing"
 
 function _init()
     pos_x = 64
     pos_y = 64
-    timer_val = time_limit
+    timer_val = flash_time
 end
 
 function _update()
@@ -29,26 +32,47 @@ function _update()
     if btn(⬇️) then pos_y += 3 end
     if btn(⬆️) then pos_y -= 3 end
 
-    timer_val -= 1
+    next_state = state
 
-    if timer_val <= 0 then
-        timer_val = time_limit
+    if state == "flashing" then
+        timer_val -= 1
 
-        if warning_count >= 3 then
-            show_safe = true
-            sfx(5)
-        else
-            show_warning = not show_warning
-            if not show_warning then warning_count += 1 end
-            if show_warning then
-                sfx(3)
-                sfx(4)
+        if timer_val <= 0 then
+            timer_val = flash_time
+
+            warning_count += 1
+            show_flashing = not show_flashing
+
+            -- Transition to safe
+            if warning_count >= 7 then
+                next_state = "safe"
+                warning_count = 0
+                timer_val = safe_time
+                show_flashing = false
+            else
+                if show_flashing then
+                    sfx(3)
+                    sfx(4)
+                end
             end
         end
-        
+
+    elseif state == "safe" then
+        timer_val -= 1
+
+        if not show_safe then sfx(5) end
+        show_safe = true
+
+        -- Transition to flashing
+        if timer_val <= 0 then
+            next_state = "flashing"
+            timer_val = flash_time
+            current_tile += 1
+            show_safe = false
+        end
     end
 
-
+    state = next_state
 end
 
 function _draw()
@@ -57,7 +81,7 @@ function _draw()
     -- draw current map
     map()
 
-    if show_warning then
+    if show_flashing then
         draw_cells(tile_list[current_tile], 13)
     end
 
