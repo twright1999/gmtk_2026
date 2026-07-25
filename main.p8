@@ -13,7 +13,7 @@ current_tile = 1
 -- 10 frames = 0.33 seconds
 flash_time = 10
 
-safe_time = 60
+safe_time = 90
 
 show_warning = false
 warning_count = 0
@@ -26,7 +26,7 @@ bart_movement_speed = 3
 
 active_player_sprite = 1
 
-state = "flashing"
+state = "safe"
 
 function _init()
     pos_x = 64
@@ -35,20 +35,53 @@ function _init()
 end
 
 function _update()
-    if state ~= "dead" then
 
+    if state ~= "dead" then
+        new_pos_x = pos_x
+        new_pos_y = pos_y
+        
         if btn(➡️) then
-            pos_x = min(pos_x + bart_movement_speed, screen_size - bart_size/2 - marge_size)
+            
+            new_pos_x = min(pos_x + bart_movement_speed, screen_size - bart_size - marge_size)
+
+            if state == "safe" then
+                for i = 0, bart_movement_speed do
+                    if not check_safety(new_pos_x + bart_size/2, new_pos_y, bart_size) then
+
+                        new_pos_x = pos_x
+                    end
+                end
+            end
+
+            
         end
+
         if btn(⬅️) then
-            pos_x = max(pos_x - bart_movement_speed, bart_size/2)
+            new_pos_x = max(pos_x - bart_movement_speed, 0)
+            if state == "safe" then
+                if not check_safety(new_pos_x - 6, new_pos_y, bart_size) then
+                    new_pos_x = pos_x
+                end
+            end
         end
         if btn(⬇️) then
-            pos_y = min(pos_y + bart_movement_speed, screen_size - bart_size/2 - marge_size)
+            new_pos_y = min(pos_y + bart_movement_speed, screen_size - bart_size - marge_size)
         end
         if btn(⬆️) then
-            pos_y = max(pos_y - bart_movement_speed, bart_size/2)
+            new_pos_y = max(pos_y - bart_movement_speed, 0)
         end
+
+
+
+        pos_x = new_pos_x
+        pos_y = new_pos_y
+
+        
+
+        -- if not(state == "safe" and not check_safety(new_pos_x, new_pos_y)) then
+        --     pos_x = new_pos_x
+        --     pos_y = new_pos_y
+        -- end
     end
 
     next_state = state
@@ -77,9 +110,9 @@ function _update()
         end
 
     elseif state == "safe" then
-        timer_val -= 1
+        -- timer_val -= 1
 
-        if not check_safety() then
+        if not check_safety(pos_x, pos_y, bart_size) then
             next_state = "dead"
         end
 
@@ -116,7 +149,8 @@ function _draw()
     end
 
     -- draw player
-    spr(active_player_sprite, pos_x - bart_size/2, pos_y - bart_size/2)
+    -- spr(active_player_sprite, pos_x - bart_size/2, pos_y - bart_size/2)
+    spr(active_player_sprite, pos_x, pos_y)
 end
 
 function draw_cells(cell_array, colour)
@@ -127,31 +161,47 @@ end
 
 function draw_cell(cell_num, colour)
     -- cell_num starts at 0
+    cell_x_pos, cell_y_pos = get_cell_pos(cell_num)
+
+    x_end = cell_x_pos + 22
+    y_end = cell_y_pos + 22
+
+    rectfill(cell_x_pos, cell_y_pos, x_end, y_end, colour)
+end
+
+function get_cell_pos(cell_num)
     x_coord = cell_num % 5
     y_coord = cell_num \ 5
 
     x_start = x_coord * 24 + 1
-    x_end = x_start + 22
     y_start = y_coord * 24 + 1
-    y_end = y_start + 22
 
-    rectfill(x_start, y_start, x_end, y_end, colour)
+    return x_start, y_start
 end
 
-function check_safety()
+function check_safety(x, y, size)
     for _, val in pairs(tile_list[current_tile]) do
-        if get_bart_position() == val then
+        cell_x_pos, cell_y_pos = get_cell_pos(val)
+
+        if check_collision(x, y, size,  cell_x_pos, cell_y_pos, 22) then
             return true
         end
     end
     return false
 end
 
-function get_bart_position()
-    cell_x = ((pos_x - 1) \ 24)
-    cell_y = ((pos_y - 1) \ 24)
+-- function get_grid_position(x, y)
+--     cell_x = ((x - 1) \ 24)
+--     cell_y = ((y - 1) \ 24)
 
-    return cell_y * 5 + cell_x
+--     return cell_y * 5 + cell_x
+-- end
+
+function check_collision(x1, y1, s1, x2, y2, s2)
+    return x1 < x2 + s2 and
+           x2 < x1 + s1 and
+           y1 < y2 + s2 and
+           y2 < y1 + s1
 end
 
 function kill_bart()
