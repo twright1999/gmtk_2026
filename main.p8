@@ -18,6 +18,14 @@ safe_time = 60
 show_warning = false
 warning_count = 0
 
+screen_size = 128
+bart_size = 8
+marge_size = 7
+
+bart_movement_speed = 3
+
+active_player_sprite = 1
+
 state = "flashing"
 
 function _init()
@@ -26,24 +34,21 @@ function _init()
     timer_val = flash_time
 end
 
-screen_size = 128
-bart_size = 8
-marge_size = 7
-
-bart_movement_speed = 1
-
 function _update()
-    if btn(➡️) then
-        pos_x = min(pos_x + bart_movement_speed, screen_size - bart_size/2 - marge_size)
-    end
-    if btn(⬅️) then
-        pos_x = max(pos_x - bart_movement_speed, bart_size/2)
-    end
-    if btn(⬇️) then
-        pos_y = min(pos_y + bart_movement_speed, screen_size - bart_size/2 - marge_size)
-    end
-    if btn(⬆️) then
-        pos_y = max(pos_y - bart_movement_speed, bart_size/2)
+    if state ~= "dead" then
+
+        if btn(➡️) then
+            pos_x = min(pos_x + bart_movement_speed, screen_size - bart_size/2 - marge_size)
+        end
+        if btn(⬅️) then
+            pos_x = max(pos_x - bart_movement_speed, bart_size/2)
+        end
+        if btn(⬇️) then
+            pos_y = min(pos_y + bart_movement_speed, screen_size - bart_size/2 - marge_size)
+        end
+        if btn(⬆️) then
+            pos_y = max(pos_y - bart_movement_speed, bart_size/2)
+        end
     end
 
     next_state = state
@@ -75,7 +80,7 @@ function _update()
         timer_val -= 1
 
         if not check_safety() then
-            kill_bart()
+            next_state = "dead"
         end
 
         if not show_safe then sfx(5) end
@@ -88,6 +93,9 @@ function _update()
             current_tile += 1
             show_safe = false
         end
+    
+    elseif state == "dead" then
+        active_player_sprite = 17
     end
 
     state = next_state
@@ -108,7 +116,7 @@ function _draw()
     end
 
     -- draw player
-    spr(1, pos_x - bart_size/2, pos_y - bart_size/2)
+    spr(active_player_sprite, pos_x - bart_size/2, pos_y - bart_size/2)
 end
 
 function draw_cells(cell_array, colour)
