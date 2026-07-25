@@ -26,7 +26,7 @@ bart_movement_speed = 3
 
 active_player_sprite = 1
 
-state = "safe"
+state = "flashing"
 
 function _init()
     pos_x = 64
@@ -41,28 +41,11 @@ function _update()
         new_pos_y = pos_y
         
         if btn(➡️) then
-            
             new_pos_x = min(pos_x + bart_movement_speed, screen_size - bart_size - marge_size)
-
-            if state == "safe" then
-                for i = 0, bart_movement_speed do
-                    if not check_safety(new_pos_x + bart_size/2, new_pos_y, bart_size) then
-
-                        new_pos_x = pos_x
-                    end
-                end
-            end
-
-            
         end
 
         if btn(⬅️) then
             new_pos_x = max(pos_x - bart_movement_speed, 0)
-            if state == "safe" then
-                if not check_safety(new_pos_x - 6, new_pos_y, bart_size) then
-                    new_pos_x = pos_x
-                end
-            end
         end
         if btn(⬇️) then
             new_pos_y = min(pos_y + bart_movement_speed, screen_size - bart_size - marge_size)
@@ -71,17 +54,10 @@ function _update()
             new_pos_y = max(pos_y - bart_movement_speed, 0)
         end
 
-
-
-        pos_x = new_pos_x
-        pos_y = new_pos_y
-
-        
-
-        -- if not(state == "safe" and not check_safety(new_pos_x, new_pos_y)) then
-        --     pos_x = new_pos_x
-        --     pos_y = new_pos_y
-        -- end
+        if not(state == "safe" and not check_safety(new_pos_x, new_pos_y, bart_size)) then
+            pos_x = new_pos_x
+            pos_y = new_pos_y
+        end
     end
 
     next_state = state
@@ -110,7 +86,7 @@ function _update()
         end
 
     elseif state == "safe" then
-        -- timer_val -= 1
+        timer_val -= 1
 
         if not check_safety(pos_x, pos_y, bart_size) then
             next_state = "dead"
