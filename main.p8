@@ -99,16 +99,6 @@ function _init()
     pos_x = 64
     pos_y = 64
     timer_val = flash_time
-
-    add(evil_homer, make_homer(
-        rnd(128),
-        rnd(128)
-    ))
-
-    add(evil_homer, make_homer(
-        rnd(128),
-        rnd(128)
-    ))
 end
 
 function _update()
