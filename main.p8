@@ -21,28 +21,29 @@ warning_count = 0
 state = "flashing"
 
 function _init()
-    pos_x = 0
-    pos_y = 0
+    pos_x = 64
+    pos_y = 64
     timer_val = flash_time
 end
 
 screen_size = 128
 bart_size = 8
 marge_size = 7
-scale_factor_0 = 0
+
+bart_movement_speed = 1
 
 function _update()
     if btn(➡️) then
-        pos_x = min(pos_x + 3, screen_size - bart_size - marge_size)
+        pos_x = min(pos_x + bart_movement_speed, screen_size - bart_size/2 - marge_size)
     end
     if btn(⬅️) then
-        pos_x = max(pos_x - 3, scale_factor_0)
+        pos_x = max(pos_x - bart_movement_speed, bart_size/2)
     end
     if btn(⬇️) then
-        pos_y = min(pos_y + 3, screen_size - bart_size - marge_size)
+        pos_y = min(pos_y + bart_movement_speed, screen_size - bart_size/2 - marge_size)
     end
     if btn(⬆️) then
-        pos_y = max(pos_y - 3, scale_factor_0)
+        pos_y = max(pos_y - bart_movement_speed, bart_size/2)
     end
 
     next_state = state
@@ -72,6 +73,10 @@ function _update()
 
     elseif state == "safe" then
         timer_val -= 1
+
+        if not check_safety() then
+            kill_bart()
+        end
 
         if not show_safe then sfx(5) end
         show_safe = true
@@ -103,7 +108,7 @@ function _draw()
     end
 
     -- draw player
-    spr(1, pos_x, pos_y)
+    spr(1, pos_x - bart_size/2, pos_y - bart_size/2)
 end
 
 function draw_cells(cell_array, colour)
@@ -123,6 +128,26 @@ function draw_cell(cell_num, colour)
     y_end = y_start + 22
 
     rectfill(x_start, y_start, x_end, y_end, colour)
+end
+
+function check_safety()
+    for _, val in pairs(tile_list[current_tile]) do
+        if get_bart_position() == val then
+            return true
+        end
+    end
+    return false
+end
+
+function get_bart_position()
+    cell_x = ((pos_x - 1) \ 24)
+    cell_y = ((pos_y - 1) \ 24)
+
+    return cell_y * 5 + cell_x
+end
+
+function kill_bart()
+    return
 end
 
 __gfx__
