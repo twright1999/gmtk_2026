@@ -48,7 +48,6 @@ tile_d3 = {0, 12, 24}
 tile_d2 = {4, 20}
 tile_d1 = {12}
 
--- tile_list_1 = {tile_9, tile_8, tile_7, tile_6, tile_5, tile_4, tile_3, tile_2, tile_1, tile_0}
 tile_list_1 = {tile_9, tile_8, tile_7, tile_6, tile_5}
 tile_list_2 = {tile_4, tile_3, tile_2, tile_1, tile_0}
 tile_list_3 = {tile_d9, tile_d8, tile_d7, tile_d6, tile_d5}
@@ -203,7 +202,6 @@ function _update()
             music(0)
         end
     elseif screen_state == "win" then
-        music(-1)
         if btnp(🅾️) then
             screen_state = "menu"
         end
@@ -349,7 +347,7 @@ function _update()
             add(evil_homers, make_homer(rnd(128), rnd(128)))
         end
 
-        if not maggie_is_on_screen and current_tile % spawn_maggie_every_number_of_these_tiles == 0 and prev_tile ~= current_tile then
+        if not maggie_is_on_screen and not maggie_gave_you_a_gun and current_tile % spawn_maggie_every_number_of_these_tiles == 0 and prev_tile ~= current_tile then
             maggie_is_on_screen = true
             maggie_pos = {x = rnd(110), y = rnd(110)}
         end
@@ -465,6 +463,7 @@ end
 function level_up()
     if current_tile_list == # tile_lists then
         screen_state = "win"
+        music(2)
         reset_game()
     else
         current_tile = 1
@@ -750,7 +749,10 @@ __sfx__
 00010000000061b5461b5461a54619546185461754616546155461554614546145461354613546125461254612546115461154610546105460f5460e5460e5460d5460d5460c5460c5460b5460a5460954608546
 000100000352005520075200b52010520115200a5200d520125201b5201f5201352015520185201c52022520235201d52020520285202c52020520245202e520325202a5202c5203052033520395203e5203e520
 310500002b62000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600
+011e00001a05216052180521a0521a0521a0521a0521a0521a0521a0521a0521a0520000200002000020000200002000020000200002000020000200002000020000200002000020000200002000020000200002
+011e00001d0521a0521b0521d0521d0521d0521d0521d0521d0521d0521d0521d0520000200002000020000200002000020000200002000020000200002000020000200002000020000200002000020000200002
 __music__
 03 00424344
 00 06070809
+00 0f104344
 
