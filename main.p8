@@ -38,12 +38,23 @@ tile_2 = {0, 1, 2, 3, 4, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24}
 tile_1 = {2, 6, 7, 12, 17, 22}
 tile_0 = {0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24}
 
+tile_d9 = {0, 2, 5, 10, 12, 14, 20, 22, 24}
+tile_d8 = {0, 4, 7, 10, 14, 17, 20, 24}
+tile_d7 = {0, 2, 4, 12, 20, 22, 24}
+tile_d6 = {0, 4, 10, 14, 20, 24}
+tile_d5 = {0, 4, 12, 20, 24}
+tile_d4 = {0, 4, 20, 24}
+tile_d3 = {0, 12, 24}
+tile_d2 = {4, 20}
+tile_d1 = {12}
+
 -- tile_list_1 = {tile_9, tile_8, tile_7, tile_6, tile_5, tile_4, tile_3, tile_2, tile_1, tile_0}
 tile_list_1 = {tile_9, tile_8, tile_7, tile_6, tile_5}
 tile_list_2 = {tile_4, tile_3, tile_2, tile_1, tile_0}
-tile_list_3 = {tile_t, tile_o, tile_e, tile_s, tile_m}
+tile_list_3 = {tile_d9, tile_d8, tile_d7, tile_d6, tile_d5}
+tile_list_4 = {tile_d4, tile_d3, tile_d2, tile_d1}
 
-tile_lists = {tile_list_1, tile_list_2, tile_list_3}
+tile_lists = {tile_list_1, tile_list_2, tile_list_3, tile_list_4}
 
 current_tile_list = 1
 current_tile = 1
