@@ -230,6 +230,7 @@ function _update()
         end
 
         if at_least_one_homer_is_eating then
+            add_munching_particle()
             bart_health -= homer_eating_damage
             sfx(1)
         end
@@ -402,7 +403,10 @@ function spawn_death_particles()
     add(particles, {pos_x, pos_y, 0, 1, 6, 50})
 
     death_particle_life = 50
+end
 
+function add_munching_particle()
+    add(particles, {pos_x, pos_y, 2-rnd(4), 2-rnd(4), 5, 10})
 end
 
 function move_particles()
