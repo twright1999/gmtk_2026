@@ -87,8 +87,11 @@ homer_eating_damage = 5
 evil_homers = {}
 
 -- MAGGIE STUFF
-maggie_gave_you_a_gun = true
+spawn_maggie_every_number_of_these_tiles = 2
+maggie_gave_you_a_gun = false
 bullets = {}
+maggie_is_on_screen = false
+maggie_pos = {x = 0, y = 0}
 
 function reset_game()
     state = "flashing"
@@ -97,7 +100,8 @@ function reset_game()
     warning_count = 0
     death_particle_life = 0
     death_particles = {}
-    maggie_gave_you_a_gun = true
+    maggie_gave_you_a_gun = false
+    maggie_is_on_screen = false
     bullets = {}
     evil_homers = {}
     current_tile = 1
@@ -298,6 +302,11 @@ function _update()
         if current_tile % spawn_homer_every_number_of_these_tiles == 0 and prev_tile ~= current_tile then
             add(evil_homers, make_homer(rnd(128), rnd(128)))
         end
+
+        if not maggie_is_on_screen and current_tile % spawn_maggie_every_number_of_these_tiles == 0 and prev_tile ~= current_tile then
+            maggie_is_on_screen = true
+            maggie_pos = {x = rnd(110), y = rnd(110)}
+        end
         ---------------------------------------------------------
 
         for b in all(bullets) do
@@ -317,6 +326,12 @@ function _update()
             end
         end
 
+
+        if maggie_is_on_screen and collide_with_maggie() then
+            maggie_is_on_screen = false
+            maggie_gave_you_a_gun = true
+        end
+
         --- STATE STUFF ---
         prev_tile = current_tile
         state = next_state
@@ -330,7 +345,7 @@ function _draw()
     if screen_state == "menu" then
         map(16,0)
 
-        print("Press 🅾️ to START", 50, 50)
+        print("Press 🅾️ to START", 50, 50, 7)
     elseif screen_state == "game" then
         -- draw current map
         map()
@@ -371,6 +386,10 @@ function _draw()
             spr(23, 120, 112)
         end
         ---------------------------------------------------------
+
+        if maggie_is_on_screen then
+            spr(25, maggie_pos.x, maggie_pos.y)
+        end
 
         draw_fade()
     end
@@ -439,6 +458,13 @@ function bullet_hit_homer(h, b)
     return dx*dx + dy*dy < 18
 end
 
+function collide_with_maggie()
+    local dx = pos_x - maggie_pos.x
+    local dy = pos_y - maggie_pos.y
+
+    return dx*dx + dy*dy < 36
+end
+
 function get_closest_homer()
     min_dist = 300
     min_homer = nil
@@ -468,6 +494,7 @@ function shoot()
     end
 
     sfx(11)
+    maggie_gave_you_a_gun = false
     add(bullets, make_bullet(target_x, target_y))
 end
 
