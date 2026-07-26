@@ -38,7 +38,15 @@ tile_2 = {0, 1, 2, 3, 4, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24}
 tile_1 = {2, 6, 7, 12, 17, 22}
 tile_0 = {0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24}
 
-tile_list = {tile_9, tile_8, tile_7, tile_6, tile_5, tile_4, tile_3, tile_2, tile_1, tile_0}
+-- tile_list_1 = {tile_9, tile_8, tile_7, tile_6, tile_5, tile_4, tile_3, tile_2, tile_1, tile_0}
+tile_list_1 = {tile_9, tile_8, tile_7, tile_6, tile_5}
+tile_list_2 = {tile_4, tile_3, tile_2, tile_1, tile_0}
+tile_list_3 = {tile_t, tile_o, tile_e, tile_s, tile_m}
+
+-- tile_lists = {tile_list_1, tile_list_2, tile_list_3}
+tile_lists = {tile_list_1}
+
+current_tile_list = 1
 current_tile = 1
 
 fade = 0
@@ -54,11 +62,7 @@ patterns = {
     0xffff  -- 100%
 }
 
--- 10 frames = 0.33 seconds
-flash_time = 10
-
--- Should be 90 frames but 1 
-safe_time = 90
+game_speed = 1
 
 dead_time = 120
 
@@ -83,26 +87,26 @@ warning_count = 0
 particles = {}
 
 -- HOMER STUFF
-spawn_homer_every_number_of_these_tiles = 1
+spawn_homer_every_number_of_these_tiles = 3
 homer_eating_damage = 5
 evil_homers = {}
 
 -- MAGGIE STUFF
-spawn_maggie_every_number_of_these_tiles = 2
+spawn_maggie_every_number_of_these_tiles = 4
 maggie_gave_you_a_gun = false
 bullets = {}
 maggie_is_on_screen = false
 maggie_pos = {x = 0, y = 0}
 
 -- LISA STUFF
-spawn_lisa_every_number_of_these_tiles = 2
+spawn_lisa_every_number_of_these_tiles = 5
 lisa_is_on_screen = false
 lisa_pos = {x = 0, y = 0}
 
 function reset_game()
     state = "flashing"
-    screen_state = "menu"
     show_warning = false
+    show_safe = false
     warning_count = 0
     death_particle_life = 0
     death_particles = {}
@@ -116,6 +120,8 @@ function reset_game()
     bart_health = 140
     timer_val = flash_time
     active_player_sprite = 1
+    current_tile_list = 1
+    game_speed = 1
 
 end
 
@@ -172,16 +178,31 @@ end
 function _init()
     pos_x = 64
     pos_y = 64
-    timer_val = flash_time
+    timer_val = 10
+
+    tile_list = tile_list_1
 end
 
 function _update()
     if screen_state == "menu" then
-        if btn(🅾️) then
+        if btnp(🅾️) then
             screen_state = "game"
             music(0)
         end
+    elseif screen_state == "win" then
+        music(-1)
+        if btnp(🅾️) then
+            screen_state = "menu"
+        end
     elseif screen_state == "game" then
+
+        -- 10 frames = 0.33 seconds
+        flash_time = 10/game_speed
+
+        -- Should be 90 frames but 1 
+        safe_time = 90/game_speed
+
+        tile_list = tile_lists[current_tile_list]
         --------------------- BART MOVEMENT ---------------------
         if state ~= "dead" then
             new_pos_x = pos_x
@@ -252,10 +273,14 @@ function _update()
             show_safe = true
 
             -- Transition to flashing
-            if timer_val <= 1 and current_tile < # tile_list then
+            if timer_val <= 1 then
+                if current_tile < # tile_list then
+                    timer_val = flash_time
+                    current_tile += 1
+                else
+                    level_up()
+                end
                 next_state = "flashing"
-                timer_val = flash_time
-                current_tile += 1
                 show_safe = false
             end
         
@@ -273,6 +298,7 @@ function _update()
 
             if fade == 8 then
                 next_state = "flashing"
+                screen_state = "menu"
                 reset_game()
             end
         end
@@ -365,6 +391,9 @@ function _draw()
         map(16,0)
 
         print("Press 🅾️ to START", 50, 50, 7)
+    elseif screen_state == "win" then
+        print("YOU WIN", 50, 50, 7)
+        print("Press 🅾️ to return to the MENU", 50, 60, 7)
     elseif screen_state == "game" then
         -- draw current map
         map()
@@ -416,6 +445,17 @@ function _draw()
 
         draw_fade()
     end
+end
+
+function level_up()
+    if current_tile_list == # tile_lists then
+        screen_state = "win"
+        reset_game()
+    else
+        current_tile = 1
+        current_tile_list += 1
+        game_speed += 1
+    end    
 end
 
 function draw_cells(cell_array, colour)
