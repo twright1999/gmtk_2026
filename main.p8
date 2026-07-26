@@ -79,8 +79,7 @@ show_warning = false
 warning_count = 0
 
 -- PARTICLE STUFF
-death_particle_life = 0
-death_particles = {}
+particles = {}
 
 -- HOMER STUFF
 spawn_homer_every_number_of_these_tiles = 1
@@ -243,7 +242,6 @@ function _update()
             timer_val -= 1
 
             active_player_sprite = 17
-            move_death_particles()
 
             if timer_val <= 0 then
                 next_state = "end"
@@ -256,6 +254,8 @@ function _update()
                 reset_game()
             end
         end
+
+        move_particles()
         ---------------------------------------------------------
 
         --------------------- HOMER UPDATES ---------------------
@@ -271,6 +271,7 @@ function _update()
         end
 
         if at_least_one_homer_is_eating then
+            add_munching_particle()
             bart_health -= homer_eating_damage
             sfx(1)
         end
@@ -324,10 +325,8 @@ function _draw()
             spr(26, pos_x+8, pos_y)
         end
 
-        -- draw death particles
-        if state == "dead" then
-            draw_death_particles()
-        end
+        -- draw particles
+        draw_particles()
 
         for h in all(evil_homers) do
             h:draw()
@@ -450,37 +449,43 @@ end
 function spawn_death_particles()
     -- add bone particles
     for _ = 0, 30 do
-        add(death_particles, {pos_x, pos_y, 3-rnd(6), 3-rnd(6), 4})
+        add(particles, {pos_x, pos_y, 3-rnd(6), 3-rnd(6), 4, 50})
     end
     -- add blood particles
     for _ = 0, 30 do
-        add(death_particles, {pos_x, pos_y, 3-rnd(6), 3-rnd(6), 5})
+        add(particles, {pos_x, pos_y, 3-rnd(6), 3-rnd(6), 5, 50})
     end
     -- add skin falling off face
-    add(death_particles, {pos_x, pos_y, 0, 1, 6})
+    add(particles, {pos_x, pos_y, 0, 1, 6, 50})
 
     death_particle_life = 50
-
 end
 
-function move_death_particles()
-    for death_particle in all(death_particles) do
-        move_death_particle(death_particle)
+function add_munching_particle()
+    add(particles, {pos_x, pos_y, 2-rnd(4), 2-rnd(4), 5, 10})
+end
+
+function move_particles()
+    for particle in all(particles) do
+        move_particle(particle)
+        particle[6] = particle[6] - 1
     end
-    death_particle_life -= 1
-    if death_particle_life == 0 then
-        death_particles = {}
+
+    for particle in all(particles) do
+        if particle[6] <= 0 then
+            del(particles, particle)
+        end
     end
 end
 
-function move_death_particle(death_particle)
-    death_particle[1] = death_particle[1] + death_particle[3]
-    death_particle[2] = death_particle[2] + death_particle[4]
+function move_particle(particle)
+    particle[1] = particle[1] + particle[3]
+    particle[2] = particle[2] + particle[4]
 end
 
-function draw_death_particles()
-    for death_particle in all(death_particles) do
-        spr(death_particle[5], death_particle[1], death_particle[2])
+function draw_particles()
+    for particle in all(particles) do
+        spr(particle[5], particle[1], particle[2])
     end
 end
 
