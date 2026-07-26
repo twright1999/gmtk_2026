@@ -305,6 +305,14 @@ function _update()
                 del(bullets, b)
             else
                 b:update()
+                for h in all(evil_homers) do
+                    if bullet_hit_homer(h, b) then
+                        del(bullets, b)
+                        del(evil_homers, h)
+                        
+                        sfx(1)
+                    end
+                end
             end
         end
 
@@ -422,6 +430,13 @@ end
 function homer_hit_bart(h)
     local dx = pos_x - h.x
     local dy = pos_y - h.y
+
+    return dx*dx + dy*dy < 36 -- radius of 6 pixels
+end
+
+function bullet_hit_homer(h, b)
+    local dx = b.x - h.x
+    local dy = b.y - h.y
 
     return dx*dx + dy*dy < 36 -- radius of 6 pixels
 end
