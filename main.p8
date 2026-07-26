@@ -132,20 +132,24 @@ function make_homer(x, y)
 end
 
 function make_bullet(target_x, target_y)
+    local dx = target_x - pos_x
+    local dy = target_y - pos_y
+    local dist = sqrt(dx*dx + dy*dy)
+    local x_dir = dx/dist
+    local y_dir = dy/dist
+
     return {
         x = pos_x,
         y = pos_y,
+        x_dir = x_dir,
+        y_dir = y_dir,
         sp = 5,
+        life = 60,
 
         update = function(self)
-            local dx = target_x - self.x
-            local dy = target_y - self.y
-            local dist = sqrt(dx*dx + dy*dy)
-
-            if dist > 0 then
-                self.x += dx / dist * self.sp
-                self.y += dy / dist * self.sp
-            end
+            self.life -= 1
+            self.x += x_dir*self.sp
+            self.y += y_dir*self.sp
         end,
 
         draw = function(self)
@@ -297,7 +301,11 @@ function _update()
         ---------------------------------------------------------
 
         for b in all(bullets) do
-            b:update()
+            if b.life == 0 then
+                del(bullets, b)
+            else
+                b:update()
+            end
         end
 
         --- STATE STUFF ---
