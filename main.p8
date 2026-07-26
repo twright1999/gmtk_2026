@@ -43,11 +43,12 @@ tile_list_1 = {tile_9, tile_8, tile_7, tile_6, tile_5}
 tile_list_2 = {tile_4, tile_3, tile_2, tile_1, tile_0}
 tile_list_3 = {tile_t, tile_o, tile_e, tile_s, tile_m}
 
--- tile_lists = {tile_list_1, tile_list_2, tile_list_3}
-tile_lists = {tile_list_1}
+tile_lists = {tile_list_1, tile_list_2, tile_list_3}
 
 current_tile_list = 1
 current_tile = 1
+
+speed_increase_on_level_up = 0.5
 
 fade = 0
 
@@ -393,7 +394,7 @@ function _draw()
         print("Press 🅾️ to START", 50, 50, 7)
     elseif screen_state == "win" then
         print("YOU WIN", 50, 50, 7)
-        print("Press 🅾️ to return to the MENU", 50, 60, 7)
+        print("Press 🅾️ to return to the MENU", 20, 60, 7)
     elseif screen_state == "game" then
         -- draw current map
         map()
@@ -454,7 +455,7 @@ function level_up()
     else
         current_tile = 1
         current_tile_list += 1
-        game_speed += 1
+        game_speed += speed_increase_on_level_up
     end    
 end
 
