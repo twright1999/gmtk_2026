@@ -307,6 +307,7 @@ function _update()
                 b:update()
                 for h in all(evil_homers) do
                     if bullet_hit_homer(h, b) then
+                        spawn_homer_death_particles(h.x, h.y)
                         del(bullets, b)
                         del(evil_homers, h)
                         
@@ -477,7 +478,7 @@ function check_collision(x1, y1, s1, x2, y2, s2)
            y2 < y1 + s1
 end
 
-function spawn_death_particles()
+function spawn_bart_death_particles()
     -- add bone particles
     for _ = 0, 30 do
         add(particles, {pos_x, pos_y, 3-rnd(6), 3-rnd(6), 4, 50})
@@ -490,6 +491,16 @@ function spawn_death_particles()
     add(particles, {pos_x, pos_y, 0, 1, 6, 50})
 
     death_particle_life = 50
+end
+
+function spawn_homer_death_particles(homer_x, homer_y)
+    for _ = 0, 10 do
+        add(particles, {homer_x, homer_y, 2-rnd(4), 2-rnd(4), 4, 5})
+    end
+    -- add blood particles
+    for _ = 0, 10 do
+        add(particles, {homer_x, homer_y, 2-rnd(4), 2-rnd(4), 5, 5})
+    end
 end
 
 function add_munching_particle()
@@ -522,7 +533,7 @@ end
 
 function kill_bart()
     music(1)
-    spawn_death_particles()
+    spawn_bart_death_particles()
 end
 
 __gfx__
