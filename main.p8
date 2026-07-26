@@ -99,6 +99,12 @@ function reset_game()
     death_particles = {}
     maggie_gave_you_a_gun = true
     bullets = {}
+    evil_homers = {}
+    current_tile = 1
+    fade = 0
+    bart_health = 140
+    timer_val = flash_time
+    active_player_sprite = 1
 
 end
 
@@ -251,6 +257,7 @@ function _update()
             fade += 0.5
 
             if fade == 8 then
+                next_state = "flashing"
                 reset_game()
             end
         end
@@ -350,6 +357,9 @@ function _draw()
 
         draw_fade()
     end
+
+    print(state, 10, 10, 14)
+    print(screen_state, 10, 20, 14)
 end
 
 function draw_cells(cell_array, colour)
