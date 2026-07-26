@@ -104,7 +104,6 @@ spawn_lisa_every_number_of_these_tiles = 5
 lisa_is_on_screen = false
 lisa_pos = {x = 0, y = 0}
 play_lisa_text = false
-lisa_text_count = 30
 
 function reset_game()
     state = "flashing"
