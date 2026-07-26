@@ -41,11 +41,26 @@ tile_0 = {0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24}
 tile_list = {tile_9, tile_8, tile_7, tile_6, tile_5, tile_4, tile_3, tile_2, tile_1, tile_0}
 current_tile = 1
 
+fade = 0
+
+patterns = {
+    0x0000, -- 0%
+    0x8000, -- 6%
+    0x8080, -- 12%
+    0xa0a0, -- 25%
+    0xa5a5, -- 50%
+    0xf5f5, -- 75%
+    0xf7f7, -- 87%
+    0xffff  -- 100%
+}
+
 -- 10 frames = 0.33 seconds
 flash_time = 10
 
 -- Should be 90 frames but 1 
 safe_time = 90
+
+dead_time = 120
 
 -- SCREEN STUFF
 screen_size = 128
@@ -75,6 +90,18 @@ evil_homers = {}
 -- MAGGIE STUFF
 maggie_gave_you_a_gun = true
 bullets = {}
+
+function reset_game()
+    state = "flashing"
+    screen_state = "menu"
+    show_warning = false
+    warning_count = 0
+    death_particle_life = 0
+    death_particles = {}
+    maggie_gave_you_a_gun = true
+    bullets = {}
+
+end
 
 function make_homer(x, y)
     return {
@@ -196,6 +223,7 @@ function _update()
 
             if not check_safety(pos_x, pos_y, bart_size) then
                 kill_bart()
+                timer_val = dead_time
                 next_state = "dead"
             end
 
@@ -212,8 +240,21 @@ function _update()
             end
         
         elseif state == "dead" then
+            timer_val -= 1
+
             active_player_sprite = 17
             move_death_particles()
+
+            if timer_val <= 0 then
+                next_state = "end"
+            end
+
+        elseif state == "end" then
+            fade += 0.5
+
+            if fade == 8 then
+                reset_game()
+            end
         end
         ---------------------------------------------------------
 
@@ -222,7 +263,7 @@ function _update()
         for h in all(evil_homers) do
             h:update()
 
-            if state ~= "dead" do
+            if state ~= "dead" and state ~= "end" do
                 if homer_hit_bart(h) then
                     at_least_one_homer_is_eating = true
                 end
@@ -234,9 +275,10 @@ function _update()
             sfx(1)
         end
 
-        if state ~= "dead" do
+        if state ~= "dead" and state ~= "end" do
             if bart_health == 0 then
                 kill_bart()
+                timer_val = dead_time
                 next_state = "dead"
             end
         end
@@ -306,6 +348,8 @@ function _draw()
             spr(23, 120, 112)
         end
         ---------------------------------------------------------
+
+        draw_fade()
     end
 end
 
@@ -333,6 +377,18 @@ function get_cell_pos(cell_num)
     y_start = y_coord * 24 + 1
 
     return x_start, y_start
+end
+
+function draw_fade()
+    if fade <= 0 then return end
+
+    for y=0,127 do
+        for x=0,127 do
+            if ((x+y*2)&15) < fade then
+                pset(x,y,0)
+            end
+        end
+    end
 end
 
 function check_safety(x, y, size)
