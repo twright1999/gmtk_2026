@@ -103,6 +103,8 @@ maggie_pos = {x = 0, y = 0}
 spawn_lisa_every_number_of_these_tiles = 5
 lisa_is_on_screen = false
 lisa_pos = {x = 0, y = 0}
+play_lisa_text = false
+lisa_text_count = 30
 
 function reset_game()
     state = "flashing"
@@ -409,10 +411,6 @@ function _draw()
 
         spr(active_player_sprite, pos_x, pos_y)
 
-        if maggie_gave_you_a_gun then
-            spr(26, pos_x+8, pos_y)
-        end
-
         -- draw particles
         draw_particles()
 
@@ -435,6 +433,10 @@ function _draw()
             spr(23, 120, 112)
         end
         ---------------------------------------------------------
+        if maggie_gave_you_a_gun then
+            spr(26, pos_x+8, pos_y)
+            print("Press ❎ to SHOOT!", 0, 122, 7)
+        end
 
         if maggie_is_on_screen then
             spr(25, maggie_pos.x, maggie_pos.y)
@@ -442,6 +444,10 @@ function _draw()
 
         if lisa_is_on_screen then
             spr(41, lisa_pos.x, lisa_pos.y)
+        end
+
+        if play_lisa_text then
+            print()
         end
 
         draw_fade()
